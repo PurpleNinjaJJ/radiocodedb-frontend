@@ -14,6 +14,19 @@ favicon.svg  hand-written SVG icon
 _headers     Cloudflare Pages security and caching headers (CSP allows the API origin)
 ```
 
+## Design and brand detection
+
+The landing page has a navy hero with a white lookup card, a logo marquee, *How it works*, a brand wall and live stats. Typography uses system fonts (no external font requests, so the CSP stays `'self'`).
+
+**Live brand detection** runs entirely in the browser from `assets/brands.json` (ordered rules, most specific first; `pattern` = whole-serial regex, otherwise `prefix` = startsWith). As you type, the input is normalized and matched:
+
+- `high` confidence, single make: green check + car logo + name + radio-maker badge (e.g. Audi · Grundig radio).
+- `medium`/`low`: shown as *Probably X* with a *tentative* tag.
+- Shared formats (BP Blaupunkt, A2C/A3C Continental, BE Becker, Chrysler/Jeep/Dodge T-serials, Renault/Dacia precodes, 2811/8200/7700 part numbers, Opel/Vauxhall): radio maker + a list of possible car makes, never one asserted make.
+- Generic Philips/Grundig serials: radio maker only.
+
+Logos are real brand marks in `assets/logos/` (see `assets/logos/SOURCES.md`); no AI-generated imagery is used anywhere. Text-only fallback wordmarks (Becker, Rover, Unknown) are left out of the brand wall.
+
 ## Views
 
 1. **Search** (`#search?q=KEY`). One input box. It calls `GET /search?q=KEY`, with an optional *Prefix match* checkbox that adds `&mode=prefix`.

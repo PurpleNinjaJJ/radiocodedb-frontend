@@ -42,6 +42,244 @@ const clear = (el) => { while (el.firstChild) el.removeChild(el.firstChild); ret
 const normKey = (s) => String(s || '').toUpperCase().replace(/[\s\-]+/g, '');
 const humanCol = (c) => c.replace(/_/g, ' ');
 
+/* ================= BRAND DETECTION ================= */
+// Logos that exist in assets/logos/. becker/rover/unknown are plain text wordmarks.
+const LOGO_FILES = new Set(['alfaromeo', 'alpine', 'audi', 'becker', 'blaupunkt', 'bmw', 'chrysler', 'citroen', 'clarion',
+  'continental', 'dacia', 'dodge', 'fiat', 'ford', 'grundig', 'harman', 'honda', 'jaguar', 'jeep', 'mercedes', 'mitsubishi',
+  'nissan', 'opel', 'panasonic', 'peugeot', 'philips', 'renault', 'rover', 'saab', 'seat', 'skoda', 'smart', 'sony', 'subaru',
+  'technisat', 'toyota', 'unknown', 'vauxhall', 'visteon', 'volkswagen', 'volvo']);
+const TEXT_LOGOS = new Set(['becker', 'rover', 'unknown']);
+const RADIO_MAKERS = new Set(['Blaupunkt', 'Grundig', 'Philips', 'Continental', 'Becker', 'Panasonic', 'Alpine', 'Clarion',
+  'TechniSat', 'Harman', 'Visteon', 'Sony', 'Delphi']);
+const NAME_ALIASES = { 'alfa romeo': 'alfaromeo', 'citroën': 'citroen', 'mercedes-benz': 'mercedes', vw: 'volkswagen', mini: null, porsche: null };
+
+// Rules whose serial format is shared by several car makes: never assert one make.
+// Candidate lists follow the public format guides; a radio maker's prefix does not encode the car.
+const SHARED = {
+  'Blaupunkt': { cars: ['Ford', 'Nissan', 'Fiat', 'Alfa Romeo', 'Peugeot', 'Mercedes', 'Renault', 'Vauxhall'], why: 'Blaupunkt (BP) serials are used across many car makes.' },
+  'Continental': { cars: ['Fiat', 'Alfa Romeo', 'Chrysler', 'Jeep', 'Peugeot', 'Citroën'], why: 'Continental (A2C/A3C) units are fitted by several car makes.' },
+  'Becker': { cars: ['Mercedes', 'Porsche', 'BMW'], why: 'Becker (BE) units are fitted by several car makes.' },
+  'Chrysler / Jeep / Dodge': { cars: ['Chrysler', 'Jeep', 'Dodge'], why: 'Chrysler, Jeep and Dodge share these radios.' },
+  'Renault / Dacia': { cars: ['Renault', 'Dacia'], why: 'Renault and Dacia share this radio-code scheme.' },
+  'Opel / Vauxhall': { cars: ['Opel', 'Vauxhall'], why: 'Opel and Vauxhall share these radios.' },
+  'Rover / MINI': { cars: ['Rover', 'MINI'], why: 'Rover and MINI share these Philips radios.' },
+};
+const SHARED_BY_PREFIX = {
+  '2811': { cars: ['Renault', 'Dacia', 'Opel', 'Vauxhall', 'Mercedes'], why: 'Renault-made units with this part number are also fitted to Opel/Vauxhall and Mercedes vans.' },
+  '8200': { cars: ['Renault', 'Dacia', 'Opel', 'Vauxhall'], why: 'Renault-made units with this part number are also fitted to Opel/Vauxhall vans.' },
+  '7700': { cars: ['Renault', 'Dacia', 'Opel', 'Vauxhall'], why: 'Renault-made units with this part number are also fitted to Opel/Vauxhall vans.' },
+};
+// Generic radio-maker serials where the car make is not part of the serial.
+const MAKER_ONLY = new Set(['Philips', 'Grundig']);
+
+const brandState = { rules: null, promise: null };
+
+function cleanName(n) { return String(n || '').replace(/\s*\(.*\)\s*$/, '').trim(); }
+function logoFor(name) {
+  const k = String(name || '').trim().toLowerCase();
+  const alias = Object.prototype.hasOwnProperty.call(NAME_ALIASES, k) ? NAME_ALIASES[k] : k.replace(/[^a-z]/g, '');
+  return alias && LOGO_FILES.has(alias) ? alias + '.svg' : null;
+}
+const logoUrl = (file) => 'assets/logos/' + file;
+
+function loadBrands() {
+  if (brandState.promise) return brandState.promise;
+  brandState.promise = fetch('assets/brands.json', { headers: { Accept: 'application/json' } })
+    .then((r) => { if (!r.ok) throw new Error('brands.json HTTP ' + r.status); return r.json(); })
+    .then((rules) => {
+      brandState.rules = rules.map((r) => {
+        let re = null;
+        if (r.pattern) { try { re = new RegExp(r.pattern); } catch { re = null; } }
+        return Object.assign({}, r, { prefix: String(r.prefix || '').toUpperCase(), re });
+      });
+      return brandState.rules;
+    })
+    .catch((e) => { brandState.promise = null; console.warn('Brand rules unavailable:', e.message); return []; });
+  return brandState.promise;
+}
+
+function matchRule(s) {
+  for (const r of brandState.rules || []) {
+    if (r.re) { if (r.re.test(s)) return r; continue; }
+    if (r.pattern) continue; // unparsable pattern: skip rather than guess
+    if (r.prefix === '') { if (r.brand !== 'Unknown') return r; continue; }
+    if (s.startsWith(r.prefix)) return r;
+  }
+  return null;
+}
+
+/* Returns {state, s, rule, brand:{name,logo}|null, cars:[{name,logo}], maker:{name,logo}|null, series, why}
+   state: empty | confident | tentative | shared | maker | partial | unknown */
+function detectBrand(raw) {
+  const s = normKey(raw);
+  if (!s) return { state: 'empty', s };
+  if (!brandState.rules) return { state: 'loading', s };
+  const rule = matchRule(s);
+  if (!rule) {
+    // A pattern-based rule whose literal prefix fits what was typed so far: keep typing.
+    const partial = (brandState.rules || []).find((r) => r.re && r.prefix && (s.startsWith(r.prefix) || r.prefix.startsWith(s)) && s.length <= 17);
+    if (partial && s.length >= 1) return { state: 'partial', s, rule: partial, brand: { name: cleanName(partial.brand), logo: partial.logo } };
+    return { state: 'unknown', s };
+  }
+  const name = cleanName(rule.brand);
+  // radio maker
+  let maker = null; let series = null;
+  if (rule.maker) {
+    const m = rule.maker;
+    const firstWord = name.split(/[\s/]+/)[0];
+    if (rule.maker_logo) maker = { name: m, logo: rule.maker_logo };
+    else if (/sony/i.test(m)) maker = { name: 'Sony', logo: 'sony.svg' };
+    else if (m.toLowerCase().includes(firstWord.toLowerCase())) series = m;
+    else maker = { name: m, logo: logoFor(m.split(/[\s/]+/)[0]) };
+  }
+  const shared = SHARED_BY_PREFIX[rule.prefix] || SHARED[name];
+  const toCar = (n) => ({ name: n, logo: logoFor(n) });
+  if (MAKER_ONLY.has(name)) {
+    return { state: 'maker', s, rule, maker: { name, logo: rule.logo }, cars: [], why: rule.note || 'The car make is not encoded in this serial.' };
+  }
+  if (shared) {
+    const isMaker = RADIO_MAKERS.has(name);
+    return { state: 'shared', s, rule, cars: shared.cars.map(toCar), why: shared.why,
+      maker: isMaker ? { name, logo: rule.logo } : maker, series };
+  }
+  const conf = rule.confidence || 'medium';
+  return { state: conf === 'high' ? 'confident' : 'tentative', s, rule, brand: { name, logo: rule.logo }, maker, series };
+}
+
+function logoImg(file, alt, cls) {
+  if (!file) return h('span', { class: (cls || '') + ' logo-text', 'aria-hidden': alt ? null : 'true' }, alt ? alt.slice(0, 2).toUpperCase() : '?');
+  return h('img', { class: cls || 'brand-logo', src: logoUrl(file), alt: alt || '', decoding: 'async', width: '40', height: '40' });
+}
+const CHECK_SVG = () => { const t = document.createElement('template'); t.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" class="ico"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'; return t.content.firstChild; };
+const INFO_SVG = () => { const t = document.createElement('template'); t.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" class="ico"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 11v5M12 7.5v.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>'; return t.content.firstChild; };
+
+function makerBadge(d) {
+  if (d.maker) return h('span', { class: 'maker-badge' }, d.maker.logo && !TEXT_LOGOS.has(d.maker.logo.replace('.svg', '')) ? h('img', { src: logoUrl(d.maker.logo), alt: '', class: 'maker-logo', width: '60', height: '16' }) : null, `${d.maker.name} radio`);
+  if (d.series) return h('span', { class: 'maker-badge series' }, d.series);
+  return null;
+}
+
+/* Renders the detection strip. compact=true for result cards. */
+function renderDetection(d, compact = false) {
+  const wrap = h('div', { class: `detect-inner det-${d.state}` + (compact ? ' compact' : '') });
+  const add = (...xs) => wrap.append(...xs.filter((x) => x != null && x !== false));
+  switch (d.state) {
+    case 'empty':
+      add(h('span', { class: 'detect-placeholder' }, 'Start typing: we’ll recognise the brand from the serial.'));
+      break;
+    case 'loading':
+      add(h('span', { class: 'detect-placeholder' }, 'Loading brand rules…'));
+      break;
+    case 'confident':
+      add(h('span', { class: 'det-icon ok' }, CHECK_SVG()), logoImg(d.brand.logo, `${d.brand.name} logo`, 'det-logo'),
+        h('span', { class: 'det-text' }, compact ? null : h('span', { class: 'det-kicker' }, 'Recognised'), h('strong', null, d.brand.name)),
+        makerBadge(d));
+      break;
+    case 'tentative':
+      add(h('span', { class: 'det-icon maybe' }, INFO_SVG()), logoImg(d.brand.logo, `${d.brand.name} logo`, 'det-logo'),
+        h('span', { class: 'det-text' }, h('span', { class: 'det-kicker' }, 'Probably'), h('strong', null, d.brand.name)),
+        makerBadge(d), h('span', { class: 'tag-tentative', title: d.rule.note || 'This prefix is a likely but not certain match' }, 'tentative'));
+      break;
+    case 'shared':
+      add(h('span', { class: 'det-icon maybe' }, INFO_SVG()),
+        h('span', { class: 'det-text' }, h('span', { class: 'det-kicker' }, 'Shared format'), h('strong', null, compact ? 'Several possible car makes' : 'More than one car make uses this serial')),
+        makerBadge(d),
+        h('div', { class: 'det-cands', role: 'list', 'aria-label': 'Possible car makes' },
+          d.cars.map((c) => h('span', { class: 'cand', role: 'listitem' }, c.logo && !TEXT_LOGOS.has(c.logo.replace('.svg', '')) ? h('img', { src: logoUrl(c.logo), alt: '', width: '20', height: '20' }) : null, c.name))),
+        compact ? null : h('p', { class: 'det-why' }, d.why + ' We search every database either way.'));
+      break;
+    case 'maker':
+      add(h('span', { class: 'det-icon maybe' }, INFO_SVG()), logoImg(d.maker.logo, `${d.maker.name} logo`, 'det-logo wide'),
+        h('span', { class: 'det-text' }, h('span', { class: 'det-kicker' }, 'Radio maker'), h('strong', null, `${d.maker.name} radio`)),
+        compact ? null : h('p', { class: 'det-why' }, 'This serial identifies the radio manufacturer; the car make isn’t part of it.'));
+      break;
+    case 'partial':
+      add(h('span', { class: 'det-icon idle' }, INFO_SVG()), logoImg(d.brand.logo, '', 'det-logo faded'),
+        h('span', { class: 'det-text' }, h('span', { class: 'det-kicker' }, 'Keep typing'), h('span', null, `Could be ${d.brand.name}${d.rule.maker ? ' (' + d.rule.maker + ')' : ''}`)));
+      break;
+    default:
+      if (!compact && d.s && d.s.length < 3) { add(h('span', { class: 'detect-placeholder' }, 'Keep typing…')); break; }
+      add(h('span', { class: 'det-icon idle' }, INFO_SVG()),
+        h('span', { class: 'det-text' }, h('span', { class: 'det-kicker' }, 'Not recognised'), h('span', null, compact ? 'Brand unknown' : 'We don’t recognise this format, but we’ll still search every database.')));
+  }
+  return wrap;
+}
+
+let detectTimer = null;
+function updateLiveDetection(immediate = false) {
+  clearTimeout(detectTimer);
+  const run = () => {
+    const d = detectBrand($('#q').value);
+    const box = $('#detect');
+    box.className = 'detect' + (d.state === 'empty' ? ' is-empty' : '');
+    clear(box).append(renderDetection(d));
+    const recognised = ['confident', 'tentative', 'shared', 'maker'].includes(d.state);
+    $('#search-btn .btn-label').textContent = recognised ? 'Get my code' : 'Find my code';
+  };
+  if (immediate) run(); else detectTimer = setTimeout(run, 160);
+}
+
+/* Brand wall + marquee, derived from brands.json */
+function brandCatalog() {
+  const cars = new Map(); const makers = new Map();
+  const addCar = (name, logo, rows) => {
+    name = cleanName(name); if (!name || name === 'Unknown') return;
+    if (RADIO_MAKERS.has(name)) { addMaker(name, logo); return; }
+    const file = logo || logoFor(name); if (!file || TEXT_LOGOS.has(file.replace('.svg', ''))) return;
+    const cur = cars.get(file);
+    if (cur) { cur.rules++; cur.rows += rows; } else cars.set(file, { name, logo: file, rules: 1, rows });
+  };
+  const addMaker = (name, logo) => {
+    name = cleanName(name).split(' / ')[0];
+    const file = logo || logoFor(name); if (!file || TEXT_LOGOS.has(file.replace('.svg', ''))) return;
+    if (!makers.has(file)) makers.set(file, { name, logo: file });
+  };
+  for (const r of brandState.rules || []) {
+    const rows = r.db_rows ? Object.values(r.db_rows).reduce((a, b) => a + (Number(b) || 0), 0) : 0;
+    const name = cleanName(r.brand);
+    if (SHARED[name] && !RADIO_MAKERS.has(name)) SHARED[name].cars.forEach((c) => addCar(c, null, rows));
+    else addCar(name, r.logo, rows);
+    if (r.maker_logo) addMaker(r.maker, r.maker_logo);
+  }
+  const byName = (a, b) => a.name.localeCompare(b.name);
+  return { cars: [...cars.values()].sort(byName), makers: [...makers.values()].sort(byName) };
+}
+
+function renderBrandWalls() {
+  const { cars, makers } = brandCatalog();
+  const tile = (b) => h('div', { class: 'brand-tile', role: 'listitem' },
+    h('span', { class: 'brand-tile-logo' }, h('img', { src: logoUrl(b.logo), alt: `${b.name} logo`, loading: 'lazy', decoding: 'async', width: '64', height: '48' })),
+    h('span', { class: 'brand-tile-name' }, b.name),
+    b.rows ? h('span', { class: 'brand-tile-meta' }, `${fmtShort(b.rows)} records`) : h('span', { class: 'brand-tile-meta' }, 'Serial recognised'));
+  const carsBox = $('#brand-wall-cars'); const makersBox = $('#brand-wall-makers');
+  carsBox.setAttribute('role', 'list'); makersBox.setAttribute('role', 'list');
+  clear(carsBox).append(...cars.map(tile));
+  clear(makersBox).append(...makers.map(tile));
+  const st = $('#stat-brands'); if (st) st.textContent = String(cars.length + makers.length);
+  const mq = $('#marquee');
+  if (mq) {
+    const imgs = () => cars.map((b) => h('img', { src: logoUrl(b.logo), alt: '', loading: 'lazy', width: '36', height: '36' }));
+    clear(mq).append(h('div', { class: 'marquee-set' }, imgs()), h('div', { class: 'marquee-set' }, imgs()));
+  }
+}
+function fmtShort(n) {
+  if (n >= 1e6) return (n / 1e6).toFixed(n >= 1e7 ? 0 : 1).replace(/\.0$/, '') + 'M';
+  if (n >= 1e3) return Math.round(n / 1e3) + 'K';
+  return String(n);
+}
+
+/* Database → logo (for the browser and about cards) */
+function dbLogo(d) {
+  const n = String(d.name || '').toLowerCase();
+  const first = n.split(/[_\-]/)[0];
+  const direct = logoFor(first === 'vw' ? 'volkswagen' : first);
+  if (direct && !TEXT_LOGOS.has(direct.replace('.svg', ''))) return direct;
+  const disp = String(d.display_name || '').toLowerCase();
+  for (const f of LOGO_FILES) if (!TEXT_LOGOS.has(f) && disp.includes(f)) return f + '.svg';
+  if (/\bvw\b/.test(disp)) return 'volkswagen.svg';
+  return null;
+}
+
 /* ---------- API ---------- */
 class ApiError extends Error {
   constructor(message, kind, status) { super(message); this.kind = kind; this.status = status; }
@@ -146,8 +384,23 @@ function initSearch() {
   document.querySelectorAll('[data-example]').forEach((b) => b.addEventListener('click', () => {
     $('#q').value = b.dataset.example;
     $('#prefix-mode').checked = false;
+    updateLiveDetection(true);
     form.requestSubmit();
   }));
+  const q = $('#q');
+  q.addEventListener('input', () => {
+    // Show it uppercased as the user types, keeping the caret in place.
+    const pos = q.selectionStart; const up = q.value.toUpperCase();
+    if (up !== q.value) { q.value = up; try { q.setSelectionRange(pos, pos); } catch { /* ignore */ } }
+    updateLiveDetection();
+  });
+  // Rotating example placeholder (pauses while focused or filled).
+  const samples = ['VWZ1Z2S4292662', 'AUZ2Z3S1445929', 'M813402', 'B200', 'V536284', 'SKZ1Z2F1234567', 'BP738376741038', 'T00BE309752008'];
+  let i = 0;
+  setInterval(() => {
+    if (document.activeElement === q || q.value) return;
+    i = (i + 1) % samples.length; q.placeholder = 'Try ' + samples[i];
+  }, 2600);
 }
 
 async function runSearch(rawQ, prefix) {
@@ -155,6 +408,7 @@ async function runSearch(rawQ, prefix) {
   const q = normKey(rawQ);
   $('#q').value = q;
   $('#prefix-mode').checked = !!prefix;
+  updateLiveDetection(true);
   if (!q) { clear(out); return; }
   if (!/^[A-Z0-9]{3,40}$/.test(q)) {
     clear(out).append(h('div', { class: 'state error' },
@@ -170,7 +424,9 @@ async function runSearch(rawQ, prefix) {
     if (prefix) params.set('mode', 'prefix');
     const [res] = await Promise.all([api('/search?' + params), loadDatabases().catch(() => null)]);
     if (reqId !== state.searchReq) return;
+    state.lastRes = res;
     renderSearch(res, out);
+    if (window.matchMedia('(max-width: 860px)').matches) out.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (err) {
     if (reqId !== state.searchReq) return;
     clear(out).append(errorState(err, () => runSearch(q, prefix)));
@@ -240,6 +496,7 @@ function renderGroup(key, rows) {
   return h('section', { class: 'group' + (cross ? ' cross' : '') },
     h('div', { class: 'group-head' },
       h('span', { class: 'group-key', text: key }),
+      renderDetection(detectBrand(key), true),
       cross
         ? h('span', { class: 'badge badge-cross' }, `Found in ${n} databases`)
         : h('span', { class: 'badge badge-muted' }, `${rows.length} row${rows.length === 1 ? '' : 's'} \u00B7 1 database`),
@@ -272,8 +529,10 @@ function renderResultCard(r, showKey = false) {
       /^generated/i.test(origin || '') ? h('div', { class: 'note note-info', text: 'Calculated by a public algorithm, not tested on this radio.' }) : null);
   }
 
+  const det = detectBrand(r.matched_key || r.serial || '');
   return h('article', { class: 'card' + (encoded ? ' warn' : '') },
     showKey ? h('div', { class: 'card-key', text: r.matched_key }) : null,
+    showKey ? renderDetection(det, true) : cardBrandLine(det),
     h('div', { class: 'card-head' },
       h('span', { class: 'badge badge-db', title: r.database }, r.display_name || meta.display_name || r.database),
       h('span', null, statusBadge(status), ' ', originBadge(origin))),
@@ -283,6 +542,16 @@ function renderResultCard(r, showKey = false) {
       h('tr', null, h('th', { text: 'database' }), h('td', { text: r.database })),
       r.row_id != null ? h('tr', null, h('th', { text: 'row id' }), h('td', { text: String(r.row_id) })) : null)),
     h('div', { class: 'small' }, h('a', { href: browseHash(r.database, r.row_id ? Math.ceil(r.row_id / 50) : 1, 50) }, 'Open this database in the browser \u2192')));
+}
+
+function cardBrandLine(d) {
+  if (d.state === 'confident' || d.state === 'tentative') {
+    return h('div', { class: 'card-brand' }, logoImg(d.brand.logo, `${d.brand.name} logo`, 'card-logo'),
+      h('span', null, h('strong', null, d.brand.name), d.state === 'tentative' ? ' (probably)' : ''), makerBadge(d));
+  }
+  if (d.state === 'maker') return h('div', { class: 'card-brand' }, logoImg(d.maker.logo, `${d.maker.name} logo`, 'card-logo wide'), h('span', null, `${d.maker.name} radio`));
+  if (d.state === 'shared') return h('div', { class: 'card-brand' }, h('span', { class: 'muted' }, 'Shared format: ' + d.cars.map((c) => c.name).join(', ')), makerBadge(d));
+  return null;
 }
 
 /* ================= BROWSER VIEW ================= */
@@ -378,7 +647,8 @@ async function showBrowse(params) {
 function renderDbMeta(d, box) {
   const encoded = isEncoded(d.code_status);
   clear(box).append(h('div', { class: 'meta-panel' },
-    h('div', { class: 'meta-top' }, h('h2', { text: d.display_name }), statusBadge(d.code_status), originBadge(d.origin)),
+    h('div', { class: 'meta-top' }, dbLogo(d) ? h('span', { class: 'db-logo' }, h('img', { src: logoUrl(dbLogo(d)), alt: '', width: '40', height: '40' })) : null,
+      h('h2', { text: d.display_name }), statusBadge(d.code_status), originBadge(d.origin)),
     h('dl', { class: 'meta-grid' },
       metaItem('Rows', fmt.format(d.row_count)),
       metaItem('Search key', d.key_column),
@@ -427,7 +697,7 @@ function updatePager() {
 /* ================= ABOUT VIEW ================= */
 function dbCard(d) {
   return h('article', { class: 'db-card' },
-    h('div', { class: 'card-head' }, h('strong', { text: d.display_name })),
+    h('div', { class: 'db-card-head' }, dbLogo(d) ? h('span', { class: 'db-logo' }, h('img', { src: logoUrl(dbLogo(d)), alt: '', width: '40', height: '40' })) : h('span', { class: 'db-logo db-logo-empty', 'aria-hidden': 'true' }, 'DB'), h('strong', { text: d.display_name })),
     h('div', null, statusBadge(d.code_status), ' ', originBadge(d.origin), ' ', h('span', { class: 'badge badge-db' }, `${fmt.format(d.row_count)} rows`)),
     h('p', null, h('span', { class: 'muted' }, 'Columns: '), h('code', { text: (d.columns || []).join(', ') })),
     h('p', null, h('span', { class: 'muted' }, 'Search key: '), h('code', { text: d.key_column || '\u2014' })),
@@ -458,21 +728,22 @@ async function showAbout() {
 function route() {
   const raw = location.hash.replace(/^#/, '') || 'search';
   const [view0, qs = ''] = raw.split('?');
+  const anchor = ['brands', 'how'].includes(view0) ? view0 : null;
   const view = ['search', 'browse', 'about'].includes(view0) ? view0 : 'search';
   const params = new URLSearchParams(qs);
   document.querySelectorAll('.view').forEach((v) => { v.hidden = v.dataset.view !== view; });
-  document.querySelectorAll('.tab').forEach((t) => {
-    const on = t.dataset.view === view;
+  document.querySelectorAll('.nav-link').forEach((t) => {
+    const on = t.dataset.view === view && (t.dataset.anchor || null) === anchor;
     t.classList.toggle('active', on);
-    t.setAttribute('aria-selected', on ? 'true' : 'false');
+    if (on) t.setAttribute('aria-current', 'page'); else t.removeAttribute('aria-current');
   });
   if (view === 'search') {
     document.title = 'Radio Code DB: search car radio serials, precodes and VINs';
     const q = params.get('q');
     const key = q ? normKey(q) + '|' + params.get('mode') : null;
     if (q && key !== state.lastSearchKey) { state.lastSearchKey = key; runSearch(q, params.get('mode') === 'prefix'); }
-    else if (!q) { state.lastSearchKey = null; clear($('#search-results')); }
-    if (!q) $('#q').focus({ preventScroll: true });
+    else if (!q && !anchor) { state.lastSearchKey = null; state.lastRes = null; clear($('#search-results')); }
+    if (!q && !anchor && window.matchMedia('(min-width: 861px)').matches) $('#q').focus({ preventScroll: true });
   } else if (view === 'browse') {
     document.title = 'Database browser \u00B7 Radio Code DB';
     showBrowse(params);
@@ -480,7 +751,23 @@ function route() {
     document.title = 'About the data \u00B7 Radio Code DB';
     showAbout();
   }
-  window.scrollTo({ top: 0 });
+  if (anchor) { const el = document.getElementById(anchor); if (el) requestAnimationFrame(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' })); }
+  else window.scrollTo({ top: 0 });
+}
+
+/* Hero + stats numbers from /databases */
+async function renderStats() {
+  try {
+    const dbs = await loadDatabases();
+    const total = dbs.reduce((a, d) => a + (Number(d.row_count) || 0), 0);
+    const plain = dbs.filter((d) => !isEncoded(d.code_status)).reduce((a, d) => a + (Number(d.row_count) || 0), 0);
+    $('#stat-rows').textContent = fmtShort(total) + '+';
+    $('#stat-dbs').textContent = String(dbs.length);
+    clear($('#stats')).append(
+      h('div', { class: 'stat' }, h('b', { text: fmt.format(total) }), h('span', null, 'records searched on every lookup')),
+      h('div', { class: 'stat' }, h('b', { text: fmt.format(plain) }), h('span', null, 'rows with plain, readable codes')),
+      h('div', { class: 'stat' }, h('b', { text: String(dbs.length) }), h('span', null, 'public databases combined')));
+  } catch { /* hero keeps its defaults */ }
 }
 
 /* ================= BOOT ================= */
@@ -488,6 +775,13 @@ function boot() {
   $('#api-base-label').textContent = API_BASE.replace(/^https?:\/\//, '');
   initSearch();
   initBrowse();
+  loadBrands().then(() => {
+    renderBrandWalls();
+    updateLiveDetection(true);
+    // Re-render search results so cards get brand logos if results arrived first.
+    if (state.lastRes && !$('#view-search').hidden) renderSearch(state.lastRes, $('#search-results'));
+  });
+  renderStats();
   window.addEventListener('hashchange', route);
   route();
   checkHealth().then((ok) => {

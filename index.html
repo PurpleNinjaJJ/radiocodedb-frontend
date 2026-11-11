@@ -3,67 +3,140 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Radio Code DB: search car radio serials, precodes and VINs</title>
-  <meta name="description" content="Search car radio serial numbers, Renault/Dacia precodes and VINs across several public radio-code databases at once, or browse each database page by page.">
-  <meta name="theme-color" content="#0f172a">
+  <title>Radio Code DB: free car radio code lookup by serial number</title>
+  <meta name="description" content="Free car radio code lookup. Enter your radio serial number, we detect the car brand and radio maker instantly and search every database at once.">
+  <meta name="theme-color" content="#0b1f3a">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/brands.json" as="fetch" crossorigin>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <a class="skip" href="#q">Skip to search</a>
   <header class="topbar">
     <div class="wrap topbar-inner">
-      <a class="brand" href="#search" aria-label="Radio Code DB home">
-        <svg class="brand-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6 7 17 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="16.5" cy="13.5" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 11.5h5M5.5 15.5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <a class="logo" href="#search" aria-label="Radio Code DB home">
+        <svg class="logo-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6 7 17 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="16.5" cy="13.5" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 11.5h5M5.5 15.5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         <span>Radio Code <strong>DB</strong></span>
       </a>
-      <nav class="tabs" role="tablist" aria-label="Views">
-        <a class="tab" role="tab" href="#search" data-view="search">Search</a>
-        <a class="tab" role="tab" href="#browse" data-view="browse">Database browser</a>
-        <a class="tab" role="tab" href="#about" data-view="about">About the data</a>
+      <nav class="nav" aria-label="Main">
+        <a class="nav-link" href="#search" data-view="search">Lookup</a>
+        <a class="nav-link" href="#brands" data-view="search" data-anchor="brands">Brands</a>
+        <a class="nav-link" href="#how" data-view="search" data-anchor="how">How it works</a>
+        <a class="nav-link" href="#browse" data-view="browse">Database browser</a>
+        <a class="nav-link" href="#about" data-view="about">About the data</a>
       </nav>
-      <span id="api-status" class="api-status" title="API status"><span class="dot"></span><span class="label">Checking API…</span></span>
+      <span id="api-status" class="api-status" title="API status"><span class="dot"></span><span class="label">Checking…</span></span>
     </div>
   </header>
 
   <div id="global-alert" class="wrap" hidden></div>
 
-  <main class="wrap">
-    <!-- SEARCH VIEW -->
+  <main>
+    <!-- ============ LOOKUP VIEW ============ -->
     <section id="view-search" class="view" data-view="search" hidden>
       <div class="hero">
-        <h1>Find a radio code by serial, precode or VIN</h1>
-        <p class="muted">Type the key only. You don't need the brand: every database is searched at once, and matches from different databases are grouped together.</p>
-        <form id="search-form" class="search-form" autocomplete="off">
-          <label for="q" class="sr-only">Serial, precode or VIN</label>
-          <div class="search-box">
-            <svg viewBox="0 0 24 24" aria-hidden="true" class="search-icon"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            <input id="q" name="q" type="search" inputmode="text" spellcheck="false" autocapitalize="characters"
-                   placeholder="e.g. M123456, A123, VWZ1Z2S4292662, WVWZZZ1KZ9W091014" maxlength="60" required>
-            <button type="submit" class="btn btn-primary" id="search-btn">Search</button>
+        <div class="wrap hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="pulse" aria-hidden="true"></span>Free car radio code lookup</p>
+            <h1>Your car radio,<br><em>unlocked</em> <span class="hl">in seconds.</span></h1>
+            <p class="lead">Enter the serial from your radio’s label. We recognise the car make and radio maker as you type, then search every database we hold at once. Free, no sign-up.</p>
+            <p class="hero-links"><a href="#how">How it works</a><a href="#brands">Supported brands</a><a href="#browse">Browse the data</a></p>
+            <dl class="hero-stats">
+              <div><dt id="stat-rows">21M+</dt><dd>records</dd></div>
+              <div><dt id="stat-dbs">7</dt><dd>databases</dd></div>
+              <div><dt id="stat-brands">30+</dt><dd>brands recognised</dd></div>
+              <div><dt>£0</dt><dd>always free</dd></div>
+            </dl>
           </div>
-          <div class="search-opts">
-            <label class="check"><input type="checkbox" id="prefix-mode"> Prefix match (find every key that starts with this)</label>
-            <span class="muted small">3–40 letters or digits. Spaces and dashes are ignored.</span>
-          </div>
-        </form>
-        <div class="examples small muted">Try:
-          <button type="button" class="chip" data-example="M123456">M123456</button>
-          <button type="button" class="chip" data-example="A123">A123</button>
-          <button type="button" class="chip" data-example="AUZ2Z3S1445929">AUZ2Z3S1445929</button>
-          <button type="button" class="chip" data-example="WVWZZZ1KZ9W091014">WVWZZZ1KZ9W091014</button>
+
+          <form id="search-form" class="search-card" autocomplete="off" role="search">
+            <h2 class="card-title">Find your radio code</h2>
+            <p class="card-sub">No need to choose a brand: the serial tells us.</p>
+            <label for="q" class="search-label">Enter your radio serial number</label>
+            <div class="search-row">
+              <input id="q" name="q" type="search" inputmode="text" spellcheck="false" autocapitalize="characters"
+                     placeholder="Try VWZ1Z2S4292662" maxlength="60" required aria-describedby="detect search-hint">
+              <button type="submit" class="btn btn-primary" id="search-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="btn-label">Find my code</span></button>
+            </div>
+            <div id="detect" class="detect is-empty" aria-live="polite"></div>
+            <div class="search-opts">
+              <label class="check"><input type="checkbox" id="prefix-mode"> Prefix match <span class="muted">(every key starting with this)</span></label>
+              <span id="search-hint" class="muted small">3–40 letters or digits. Spaces and dashes are ignored.</span>
+            </div>
+            <div class="examples small">
+              <span class="muted">Examples:</span>
+              <button type="button" class="chip" data-example="AUZ2Z3S1445929">AUZ2Z3S1445929</button>
+              <button type="button" class="chip" data-example="M813402">M813402</button>
+              <button type="button" class="chip" data-example="B200">B200</button>
+              <button type="button" class="chip" data-example="WVWZZZ1KZ9W091014">WVWZZZ1KZ9W091014</button>
+            </div>
+            <ul class="card-trust small">
+              <li>✓ Free, no account</li><li>✓ Every database at once</li><li>✓ Sources shown</li>
+            </ul>
+          </form>
         </div>
       </div>
-      <div id="search-results" aria-live="polite"></div>
+      <div class="marquee" aria-hidden="true"><div class="marquee-track" id="marquee"></div></div>
+
+      <div class="wrap">
+        <div id="search-results" class="results" aria-live="polite"></div>
+      </div>
+
+      <section id="how" class="section">
+        <div class="wrap">
+          <h2 class="section-title">How it works</h2>
+          <p class="section-sub">Three steps, a few seconds.</p>
+          <ol class="steps">
+            <li class="step">
+              <span class="step-num" aria-hidden="true">1</span>
+              <h3>Enter your serial</h3>
+              <p>Find it on the radio’s label or in the radio’s menu: a serial like <code>VWZ1Z…</code>, a Renault precode like <code>B200</code>, a Ford <code>M123456</code>, or your VIN.</p>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">2</span>
+              <h3>We detect the brand</h3>
+              <p>The serial’s prefix tells us the car make and who built the radio, e.g. <code>AUZ2Z</code> → Audi with a Grundig unit. No dropdowns.</p>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">3</span>
+              <h3>We search every database</h3>
+              <p>Your key is matched against all databases at once. If it appears in several, you see every match side by side with its source.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="brands" class="section section-alt">
+        <div class="wrap">
+          <h2 class="section-title">Brands we recognise</h2>
+          <p class="section-sub">Car makes and radio manufacturers our serial detection knows about. Coverage of actual codes varies by brand; see <a href="#about">About the data</a>.</p>
+          <h3 class="wall-title">Car makes</h3>
+          <div id="brand-wall-cars" class="brand-wall"></div>
+          <h3 class="wall-title">Radio manufacturers</h3>
+          <div id="brand-wall-makers" class="brand-wall"></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="wrap">
+          <div id="stats" class="stats"></div>
+        </div>
+      </section>
     </section>
 
-    <!-- BROWSER VIEW -->
+    <!-- ============ BROWSER VIEW ============ -->
     <section id="view-browse" class="view" data-view="browse" hidden>
-      <div class="browse-head">
-        <h1>Database browser</h1>
+      <div class="page-head">
+        <div class="wrap">
+          <h1>Database browser</h1>
+          <p class="lead-sm">Pick a database and page through its rows.</p>
+        </div>
+      </div>
+      <div class="wrap page-body">
         <div class="browse-controls">
           <label class="field">
             <span>Database</span>
-            <select id="db-select" aria-label="Choose a database"><option value="">Loading…</option></select>
+            <select id="db-select"><option value="">Loading…</option></select>
           </label>
           <label class="field">
             <span>Rows per page</span>
@@ -72,38 +145,58 @@
             </select>
           </label>
         </div>
-      </div>
-      <div id="db-meta"></div>
-      <div id="browse-table" aria-live="polite"></div>
-      <div id="pager" class="pager" hidden>
-        <button class="btn" id="first-page" aria-label="First page">« First</button>
-        <button class="btn" id="prev-page">‹ Prev</button>
-        <form id="jump-form" class="jump">
-          <label>Page <input id="page-input" type="number" min="1" value="1" inputmode="numeric"></label>
-          <span>of <strong id="total-pages">–</strong></span>
-        </form>
-        <button class="btn" id="next-page">Next ›</button>
-        <button class="btn" id="last-page" aria-label="Last page">Last »</button>
-        <span class="muted small" id="page-summary"></span>
+        <div id="db-meta"></div>
+        <div id="browse-table" aria-live="polite"></div>
+        <div id="pager" class="pager" hidden>
+          <button class="btn" id="first-page" aria-label="First page">« First</button>
+          <button class="btn" id="prev-page">‹ Prev</button>
+          <form id="jump-form" class="jump">
+            <label>Page <input id="page-input" type="number" min="1" value="1" inputmode="numeric"></label>
+            <span>of <strong id="total-pages">–</strong></span>
+          </form>
+          <button class="btn" id="next-page">Next ›</button>
+          <button class="btn" id="last-page" aria-label="Last page">Last »</button>
+          <span class="muted small" id="page-summary"></span>
+        </div>
       </div>
     </section>
 
-    <!-- ABOUT VIEW -->
+    <!-- ============ ABOUT VIEW ============ -->
     <section id="view-about" class="view" data-view="about" hidden>
-      <h1>About the data</h1>
-      <p class="muted">This site searches public, freely downloadable radio-code datasets. Coverage is partial: no single database covers every car. Read each source's caveats before you rely on a value.</p>
-      <div class="legend">
-        <div><span class="badge badge-ok">Plain code</span> The stored value is a readable 4-digit code. Ford and Renault tables are <em>generated by an algorithm</em>, not collected from real radios, and haven't been tested against units.</div>
-        <div><span class="badge badge-warn">Encoded / unverified</span> The stored value is a raw hex value from a vendor file. It is <strong>not</strong> a usable radio code and has not been decoded.</div>
+      <div class="page-head">
+        <div class="wrap">
+          <h1>About the data</h1>
+          <p class="lead-sm">This site searches public, freely downloadable radio-code datasets. Coverage is partial: no single database covers every car.</p>
+        </div>
       </div>
-      <div id="about-summary" class="about-summary"></div>
-      <div id="about-list" class="db-grid"></div>
-      <p class="small muted disclaimer">Use only for radios you own or are authorised to service. Values are provided as-is, with no guarantee that they are accurate.</p>
+      <div class="wrap page-body">
+        <div class="legend">
+          <div><span class="badge badge-ok">✓ Plain code</span> The stored value is a readable 4-digit code. Ford and Renault tables are <em>generated by an algorithm</em>, not collected from real radios.</div>
+          <div><span class="badge badge-warn">⚠ Encoded / unverified</span> The stored value is a raw hex value from a vendor file. It is <strong>not</strong> a usable radio code and has not been decoded.</div>
+        </div>
+        <div id="about-summary" class="stats"></div>
+        <div id="about-list" class="db-grid"></div>
+        <p class="small muted disclaimer">Use only for radios you own or are authorised to service. Values are provided as-is, with no guarantee that they are accurate.</p>
+      </div>
     </section>
   </main>
 
   <footer class="footer">
-    <div class="wrap small muted">Radio Code DB · data from public sources (see <a href="#about">About the data</a>) · API: <code id="api-base-label"></code></div>
+    <div class="wrap footer-inner">
+      <div>
+        <a class="logo logo-footer" href="#search">
+          <svg class="logo-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6 7 17 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="16.5" cy="13.5" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 11.5h5M5.5 15.5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span>Radio Code <strong>DB</strong></span>
+        </a>
+        <p class="small">A free, independent radio-code lookup built on public datasets.</p>
+      </div>
+      <nav class="footer-links small" aria-label="Footer">
+        <a href="#search">Lookup</a>
+        <a href="#browse">Database browser</a>
+        <a href="#about">About the data</a>
+      </nav>
+      <p class="small footer-legal">Not affiliated with, or endorsed by, any car or radio manufacturer. Brand names and logos belong to their owners and are used only to identify compatible vehicles. Use only for radios you own or are authorised to service. API: <code id="api-base-label"></code></p>
+    </div>
   </footer>
 
   <script src="app.js"></script>

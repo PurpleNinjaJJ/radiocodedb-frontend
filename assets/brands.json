@@ -1,0 +1,1059 @@
+[
+ {
+  "prefix": "M",
+  "pattern": "^M\\d{6}$",
+  "brand": "Ford",
+  "logo": "ford.svg",
+  "maker": "Ford M-series",
+  "confidence": "high",
+  "db_rows": {
+   "ford_m": 1000000
+  },
+  "source": "db+web"
+ },
+ {
+  "prefix": "V",
+  "pattern": "^V\\d{6}$",
+  "brand": "Ford",
+  "logo": "ford.svg",
+  "maker": "Ford V-series",
+  "confidence": "high",
+  "db_rows": {
+   "ford_v": 1000000
+  },
+  "source": "db+web"
+ },
+ {
+  "prefix": "",
+  "pattern": "^[ZA]\\d{6}$",
+  "brand": "Ford",
+  "logo": "ford.svg",
+  "maker": "Ford (pre-2004 Z/A series)",
+  "confidence": "medium",
+  "source": "web:onlineradiocodes ford"
+ },
+ {
+  "prefix": "C7",
+  "pattern": "^C7[A-Z0-9]{15}$",
+  "brand": "Ford",
+  "logo": "ford.svg",
+  "maker": "Ford (C7 17-char)",
+  "confidence": "high",
+  "source": "web:onlineradiocodes ford"
+ },
+ {
+  "prefix": "",
+  "pattern": "^[A-Z]\\d{3}$",
+  "brand": "Renault / Dacia",
+  "logo": "renault.svg",
+  "maker": "Renault precode (letter + 3 digits)",
+  "confidence": "high",
+  "db_rows": {
+   "renault_precode": 23400
+  },
+  "source": "db+web"
+ },
+ {
+  "prefix": "U",
+  "pattern": "^U\\d{3,5}L\\d{3,5}$",
+  "brand": "Honda",
+  "logo": "honda.svg",
+  "maker": "Honda (U/L serial)",
+  "confidence": "high",
+  "source": "web:onlineradiocodes honda"
+ },
+ {
+  "prefix": "T",
+  "pattern": "^T\\d{2}QN",
+  "brand": "Chrysler / Jeep / Dodge",
+  "logo": "chrysler.svg",
+  "confidence": "high",
+  "source": "web:onlineradiocodes chrysler"
+ },
+ {
+  "prefix": "BP",
+  "pattern": "^BP\\d{12}$",
+  "brand": "Blaupunkt",
+  "logo": "blaupunkt.svg",
+  "maker": "Blaupunkt",
+  "confidence": "high",
+  "note": "Blaupunkt-built; fitted to Ford, Nissan, Fiat, Honda, VW and aftermarket",
+  "source": "web"
+ },
+ {
+  "prefix": "SNSOCD",
+  "brand": "Ford",
+  "logo": "ford.svg",
+  "maker": "Ford (Sony)",
+  "confidence": "medium",
+  "source": "web:onlineradiocodes ford"
+ },
+ {
+  "prefix": "VWZ1Z",
+  "brand": "Volkswagen",
+  "logo": "volkswagen.svg",
+  "maker": "Blaupunkt",
+  "confidence": "high",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "blaupunkt.svg",
+  "db_rows": {
+   "vw_gist": 145,
+   "vw_vin_gist": 18
+  }
+ },
+ {
+  "prefix": "VWZ2Z",
+  "brand": "Volkswagen",
+  "logo": "volkswagen.svg",
+  "maker": "Grundig",
+  "confidence": "high",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "grundig.svg",
+  "db_rows": {
+   "grundig": 740865,
+   "vw_gist": 27,
+   "vw_vin_gist": 12
+  }
+ },
+ {
+  "prefix": "VWZ4Z",
+  "brand": "Volkswagen",
+  "logo": "volkswagen.svg",
+  "maker": "Delphi",
+  "confidence": "high",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "db_rows": {
+   "vw_gist": 58,
+   "vw_vin_gist": 27
+  }
+ },
+ {
+  "prefix": "VWZ5Z",
+  "brand": "Volkswagen",
+  "logo": "volkswagen.svg",
+  "maker": "Panasonic",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "panasonic.svg",
+  "db_rows": {
+   "vw_gist": 6,
+   "vw_vin_gist": 43
+  }
+ },
+ {
+  "prefix": "VWZ6Z",
+  "brand": "Volkswagen",
+  "logo": "volkswagen.svg",
+  "maker": "Philips / Continental",
+  "confidence": "high",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "philips.svg",
+  "db_rows": {
+   "philips": 89995,
+   "vw_gist": 50,
+   "vw_vin_gist": 3
+  }
+ },
+ {
+  "prefix": "VWZ7Z",
+  "brand": "Volkswagen",
+  "logo": "volkswagen.svg",
+  "maker": "Visteon",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "visteon.svg",
+  "db_rows": {
+   "vw_gist": 14
+  }
+ },
+ {
+  "prefix": "VWZ8Z",
+  "brand": "Volkswagen",
+  "logo": "volkswagen.svg",
+  "maker": "Alpine",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "alpine.svg",
+  "db_rows": {
+   "vw_gist": 2
+  }
+ },
+ {
+  "prefix": "VWZ9Z",
+  "brand": "Volkswagen",
+  "logo": "volkswagen.svg",
+  "maker": "Clarion",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "clarion.svg",
+  "db_rows": {
+   "vw_gist": 4,
+   "vw_vin_gist": 51
+  }
+ },
+ {
+  "prefix": "VWZAZ",
+  "brand": "Volkswagen",
+  "logo": "volkswagen.svg",
+  "maker": "TechniSat",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "technisat.svg",
+  "db_rows": {
+   "vw_gist": 35
+  }
+ },
+ {
+  "prefix": "VWZGZ",
+  "brand": "Volkswagen",
+  "logo": "volkswagen.svg",
+  "maker": "Harman",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "harman.svg",
+  "db_rows": {
+   "vw_gist": 9
+  }
+ },
+ {
+  "prefix": "AUZ1Z",
+  "brand": "Audi",
+  "logo": "audi.svg",
+  "maker": "Blaupunkt",
+  "confidence": "high",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "blaupunkt.svg",
+  "db_rows": {
+   "vw_gist": 35
+  }
+ },
+ {
+  "prefix": "AUZ2Z",
+  "brand": "Audi",
+  "logo": "audi.svg",
+  "maker": "Grundig",
+  "confidence": "high",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "grundig.svg",
+  "db_rows": {
+   "grundig": 128531,
+   "vw_gist": 22
+  }
+ },
+ {
+  "prefix": "AUZ4Z",
+  "brand": "Audi",
+  "logo": "audi.svg",
+  "maker": "Delphi",
+  "confidence": "high",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "db_rows": {
+   "vw_gist": 1
+  }
+ },
+ {
+  "prefix": "AUZ5Z",
+  "brand": "Audi",
+  "logo": "audi.svg",
+  "maker": "Panasonic",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "panasonic.svg",
+  "db_rows": {
+   "vw_gist": 8
+  }
+ },
+ {
+  "prefix": "AUZ6Z",
+  "brand": "Audi",
+  "logo": "audi.svg",
+  "maker": "Philips / Continental",
+  "confidence": "high",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "philips.svg",
+  "db_rows": {
+   "philips": 126825
+  }
+ },
+ {
+  "prefix": "AUZ7Z",
+  "brand": "Audi",
+  "logo": "audi.svg",
+  "maker": "Visteon",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople",
+  "maker_logo": "visteon.svg"
+ },
+ {
+  "prefix": "AUZ8Z",
+  "brand": "Audi",
+  "logo": "audi.svg",
+  "maker": "Alpine",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople",
+  "maker_logo": "alpine.svg"
+ },
+ {
+  "prefix": "AUZ9Z",
+  "brand": "Audi",
+  "logo": "audi.svg",
+  "maker": "Clarion",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople",
+  "maker_logo": "clarion.svg"
+ },
+ {
+  "prefix": "AUZAZ",
+  "brand": "Audi",
+  "logo": "audi.svg",
+  "maker": "TechniSat",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople",
+  "maker_logo": "technisat.svg"
+ },
+ {
+  "prefix": "AUZGZ",
+  "brand": "Audi",
+  "logo": "audi.svg",
+  "maker": "Harman",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople",
+  "maker_logo": "harman.svg"
+ },
+ {
+  "prefix": "SKZ1Z",
+  "brand": "Skoda",
+  "logo": "skoda.svg",
+  "maker": "Blaupunkt",
+  "confidence": "high",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "blaupunkt.svg",
+  "db_rows": {
+   "vw_gist": 11
+  }
+ },
+ {
+  "prefix": "SKZ2Z",
+  "brand": "Skoda",
+  "logo": "skoda.svg",
+  "maker": "Grundig",
+  "confidence": "high",
+  "source": "web:freeradiocodes/vwcodes/autopeople",
+  "maker_logo": "grundig.svg"
+ },
+ {
+  "prefix": "SKZ4Z",
+  "brand": "Skoda",
+  "logo": "skoda.svg",
+  "maker": "Delphi",
+  "confidence": "high",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "db_rows": {
+   "vw_gist": 15
+  }
+ },
+ {
+  "prefix": "SKZ5Z",
+  "brand": "Skoda",
+  "logo": "skoda.svg",
+  "maker": "Panasonic",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople",
+  "maker_logo": "panasonic.svg"
+ },
+ {
+  "prefix": "SKZ6Z",
+  "brand": "Skoda",
+  "logo": "skoda.svg",
+  "maker": "Philips / Continental",
+  "confidence": "high",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "philips.svg",
+  "db_rows": {
+   "vw_gist": 4
+  }
+ },
+ {
+  "prefix": "SKZ7Z",
+  "brand": "Skoda",
+  "logo": "skoda.svg",
+  "maker": "Visteon",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "visteon.svg",
+  "db_rows": {
+   "vw_gist": 22
+  }
+ },
+ {
+  "prefix": "SKZ8Z",
+  "brand": "Skoda",
+  "logo": "skoda.svg",
+  "maker": "Alpine",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople",
+  "maker_logo": "alpine.svg"
+ },
+ {
+  "prefix": "SKZ9Z",
+  "brand": "Skoda",
+  "logo": "skoda.svg",
+  "maker": "Clarion",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople",
+  "maker_logo": "clarion.svg"
+ },
+ {
+  "prefix": "SKZAZ",
+  "brand": "Skoda",
+  "logo": "skoda.svg",
+  "maker": "TechniSat",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "technisat.svg",
+  "db_rows": {
+   "vw_gist": 12
+  }
+ },
+ {
+  "prefix": "SKZGZ",
+  "brand": "Skoda",
+  "logo": "skoda.svg",
+  "maker": "Harman",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople",
+  "maker_logo": "harman.svg"
+ },
+ {
+  "prefix": "SEZ1Z",
+  "brand": "SEAT",
+  "logo": "seat.svg",
+  "maker": "Blaupunkt",
+  "confidence": "high",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "blaupunkt.svg",
+  "db_rows": {
+   "grundig": 66,
+   "vw_gist": 1
+  }
+ },
+ {
+  "prefix": "SEZ2Z",
+  "brand": "SEAT",
+  "logo": "seat.svg",
+  "maker": "Grundig",
+  "confidence": "high",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "grundig.svg",
+  "db_rows": {
+   "vw_gist": 2
+  }
+ },
+ {
+  "prefix": "SEZ4Z",
+  "brand": "SEAT",
+  "logo": "seat.svg",
+  "maker": "Delphi",
+  "confidence": "high",
+  "source": "web:freeradiocodes/vwcodes/autopeople"
+ },
+ {
+  "prefix": "SEZ5Z",
+  "brand": "SEAT",
+  "logo": "seat.svg",
+  "maker": "Panasonic",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople",
+  "maker_logo": "panasonic.svg"
+ },
+ {
+  "prefix": "SEZ6Z",
+  "brand": "SEAT",
+  "logo": "seat.svg",
+  "maker": "Philips / Continental",
+  "confidence": "high",
+  "source": "web:freeradiocodes/vwcodes/autopeople+db",
+  "maker_logo": "philips.svg",
+  "db_rows": {
+   "vw_gist": 2
+  }
+ },
+ {
+  "prefix": "SEZ7Z",
+  "brand": "SEAT",
+  "logo": "seat.svg",
+  "maker": "Visteon",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople",
+  "maker_logo": "visteon.svg"
+ },
+ {
+  "prefix": "SEZ8Z",
+  "brand": "SEAT",
+  "logo": "seat.svg",
+  "maker": "Alpine",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople",
+  "maker_logo": "alpine.svg"
+ },
+ {
+  "prefix": "SEZ9Z",
+  "brand": "SEAT",
+  "logo": "seat.svg",
+  "maker": "Clarion",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople",
+  "maker_logo": "clarion.svg"
+ },
+ {
+  "prefix": "SEZAZ",
+  "brand": "SEAT",
+  "logo": "seat.svg",
+  "maker": "TechniSat",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople",
+  "maker_logo": "technisat.svg"
+ },
+ {
+  "prefix": "SEZGZ",
+  "brand": "SEAT",
+  "logo": "seat.svg",
+  "maker": "Harman",
+  "confidence": "medium",
+  "source": "web:freeradiocodes/vwcodes/autopeople",
+  "maker_logo": "harman.svg"
+ },
+ {
+  "prefix": "T00BE",
+  "brand": "Chrysler / Jeep / Dodge",
+  "logo": "chrysler.svg",
+  "confidence": "high",
+  "source": "web:onlineradiocodes chrysler/jeep/dodge + getradiocode",
+  "maker": "Harman"
+ },
+ {
+  "prefix": "T00AM",
+  "brand": "Chrysler / Jeep / Dodge",
+  "logo": "chrysler.svg",
+  "confidence": "high",
+  "source": "web:onlineradiocodes chrysler/jeep/dodge + getradiocode"
+ },
+ {
+  "prefix": "TVPQN",
+  "brand": "Chrysler / Jeep / Dodge",
+  "logo": "chrysler.svg",
+  "confidence": "high",
+  "source": "web:onlineradiocodes chrysler/jeep/dodge + getradiocode"
+ },
+ {
+  "prefix": "TZ1AA",
+  "brand": "Chrysler / Jeep / Dodge",
+  "logo": "chrysler.svg",
+  "confidence": "high",
+  "source": "web:onlineradiocodes chrysler/jeep/dodge + getradiocode"
+ },
+ {
+  "prefix": "TQ1AA",
+  "brand": "Chrysler / Jeep / Dodge",
+  "logo": "chrysler.svg",
+  "confidence": "high",
+  "source": "web:onlineradiocodes chrysler/jeep/dodge + getradiocode"
+ },
+ {
+  "prefix": "SU685",
+  "brand": "Subaru",
+  "logo": "subaru.svg",
+  "maker": "Philips",
+  "confidence": "high",
+  "db_rows": {
+   "philips": 18938
+  },
+  "source": "db+web:getradiocode"
+ },
+ {
+  "prefix": "T0MY",
+  "brand": "Chrysler / Jeep / Dodge",
+  "logo": "chrysler.svg",
+  "confidence": "high",
+  "source": "web:onlineradiocodes chrysler/jeep/dodge + getradiocode",
+  "maker": "Delphi / Aptiv"
+ },
+ {
+  "prefix": "SOCD",
+  "brand": "Ford",
+  "logo": "ford.svg",
+  "maker": "Ford (Sony)",
+  "confidence": "medium",
+  "source": "web:onlineradiocodes ford"
+ },
+ {
+  "prefix": "2811",
+  "brand": "Renault / Dacia",
+  "logo": "renault.svg",
+  "confidence": "medium",
+  "note": "Renault part/barcode number",
+  "source": "web:onlineradiocodes renault"
+ },
+ {
+  "prefix": "8200",
+  "brand": "Renault / Dacia",
+  "logo": "renault.svg",
+  "confidence": "medium",
+  "note": "Renault part/barcode number",
+  "source": "web:onlineradiocodes renault"
+ },
+ {
+  "prefix": "7700",
+  "brand": "Renault / Dacia",
+  "logo": "renault.svg",
+  "confidence": "medium",
+  "note": "Renault part/barcode number",
+  "source": "web:onlineradiocodes renault"
+ },
+ {
+  "prefix": "VWZ",
+  "brand": "Volkswagen",
+  "logo": "volkswagen.svg",
+  "confidence": "high",
+  "db_rows": {
+   "philips": 89995,
+   "grundig": 740865,
+   "vw_gist": 353,
+   "vw_vin_gist": 157
+  },
+  "source": "db+web"
+ },
+ {
+  "prefix": "AUZ",
+  "brand": "Audi",
+  "logo": "audi.svg",
+  "confidence": "high",
+  "db_rows": {
+   "philips": 126825,
+   "grundig": 128531,
+   "vw_gist": 78
+  },
+  "source": "db+web"
+ },
+ {
+  "prefix": "SKZ",
+  "brand": "Skoda",
+  "logo": "skoda.svg",
+  "confidence": "high",
+  "db_rows": {
+   "vw_gist": 64
+  },
+  "source": "db+web"
+ },
+ {
+  "prefix": "SEZ",
+  "brand": "SEAT",
+  "logo": "seat.svg",
+  "confidence": "high",
+  "db_rows": {
+   "grundig": 66,
+   "vw_gist": 5
+  },
+  "source": "db+web"
+ },
+ {
+  "prefix": "TM9",
+  "brand": "Chrysler / Jeep / Dodge",
+  "logo": "chrysler.svg",
+  "confidence": "high",
+  "source": "web:onlineradiocodes chrysler/jeep/dodge + getradiocode",
+  "maker": "Panasonic"
+ },
+ {
+  "prefix": "A2C",
+  "brand": "Continental (OEM: Fiat, Chrysler group, others)",
+  "logo": "continental.svg",
+  "maker": "Continental",
+  "confidence": "medium",
+  "source": "web:onlineradiocodes fiat/chrysler"
+ },
+ {
+  "prefix": "A3C",
+  "brand": "Continental (OEM: Fiat, Chrysler group, others)",
+  "logo": "continental.svg",
+  "maker": "Continental",
+  "confidence": "medium",
+  "source": "web:onlineradiocodes fiat/chrysler"
+ },
+ {
+  "prefix": "FDD",
+  "brand": "Ford",
+  "logo": "ford.svg",
+  "confidence": "medium",
+  "source": "web:onlineradiocodes ford"
+ },
+ {
+  "prefix": "FIF",
+  "brand": "Fiat",
+  "logo": "fiat.svg",
+  "maker": "Philips",
+  "confidence": "high",
+  "db_rows": {
+   "philips": 6465
+  },
+  "source": "db+web:getradiocode"
+ },
+ {
+  "prefix": "89F",
+  "brand": "Volvo",
+  "logo": "volvo.svg",
+  "maker": "Volvo trucks",
+  "confidence": "medium",
+  "source": "web:getradiocode"
+ },
+ {
+  "prefix": "BP",
+  "brand": "Blaupunkt",
+  "logo": "blaupunkt.svg",
+  "maker": "Blaupunkt",
+  "confidence": "high",
+  "note": "Any BP serial (e.g. BP3305A1234567)",
+  "source": "web:getradiocode/onlineradiocodes"
+ },
+ {
+  "prefix": "DW",
+  "brand": "Nissan",
+  "logo": "nissan.svg",
+  "confidence": "high",
+  "source": "web:onlineradiocodes nissan"
+ },
+ {
+  "prefix": "DS",
+  "brand": "Nissan",
+  "logo": "nissan.svg",
+  "confidence": "high",
+  "source": "web:onlineradiocodes nissan"
+ },
+ {
+  "prefix": "HP",
+  "brand": "Nissan",
+  "logo": "nissan.svg",
+  "confidence": "high",
+  "source": "web:onlineradiocodes nissan"
+ },
+ {
+  "prefix": "HY",
+  "brand": "Nissan",
+  "logo": "nissan.svg",
+  "confidence": "high",
+  "source": "web:onlineradiocodes nissan"
+ },
+ {
+  "prefix": "HG",
+  "brand": "Nissan",
+  "logo": "nissan.svg",
+  "confidence": "high",
+  "source": "web:onlineradiocodes nissan"
+ },
+ {
+  "prefix": "CL",
+  "brand": "Nissan",
+  "logo": "nissan.svg",
+  "confidence": "high",
+  "source": "web:onlineradiocodes nissan",
+  "maker": "Clarion",
+  "maker_logo": "clarion.svg"
+ },
+ {
+  "prefix": "PN",
+  "brand": "Nissan",
+  "logo": "nissan.svg",
+  "confidence": "high",
+  "source": "web:onlineradiocodes nissan",
+  "maker": "Panasonic",
+  "maker_logo": "panasonic.svg"
+ },
+ {
+  "prefix": "PP",
+  "brand": "Nissan",
+  "logo": "nissan.svg",
+  "confidence": "high",
+  "source": "web:onlineradiocodes nissan",
+  "maker": "Panasonic",
+  "maker_logo": "panasonic.svg"
+ },
+ {
+  "prefix": "GM",
+  "brand": "Opel / Vauxhall",
+  "logo": "opel.svg",
+  "confidence": "high",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 4583517,
+   "grundig": 1631412
+  },
+  "note": "Philips and Grundig GM units (GM0/GM1/GM4/GM8 in philips; GM0/GM1 in grundig)",
+  "maker": "Philips / Grundig"
+ },
+ {
+  "prefix": "PH",
+  "brand": "Philips",
+  "logo": "philips.svg",
+  "confidence": "high",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 4255645
+  },
+  "note": "Generic Philips unit serial; car maker not encoded",
+  "maker": "Philips"
+ },
+ {
+  "prefix": "RN",
+  "brand": "Renault",
+  "logo": "renault.svg",
+  "confidence": "high",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 3920502
+  },
+  "maker": "Philips"
+ },
+ {
+  "prefix": "RG",
+  "brand": "Rover / MINI",
+  "logo": "rover.svg",
+  "confidence": "high",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 1527909
+  },
+  "maker": "Philips"
+ },
+ {
+  "prefix": "AR",
+  "brand": "Rover / MINI",
+  "logo": "rover.svg",
+  "confidence": "medium",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 724169
+  },
+  "note": "getradiocode lists AR/RG as Rover/Mini (Austin Rover); an older internal map guessed Alfa Romeo",
+  "maker": "Philips"
+ },
+ {
+  "prefix": "FO",
+  "brand": "Ford",
+  "logo": "ford.svg",
+  "confidence": "high",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 307796
+  },
+  "note": "Philips Ford units (Ford Australia/Asia)",
+  "maker": "Philips"
+ },
+ {
+  "prefix": "VO",
+  "brand": "Volvo",
+  "logo": "volvo.svg",
+  "confidence": "high",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 246262
+  },
+  "note": "Philips VC radios",
+  "maker": "Philips"
+ },
+ {
+  "prefix": "HO",
+  "brand": "Honda",
+  "logo": "honda.svg",
+  "confidence": "high",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 87770
+  },
+  "maker": "Philips"
+ },
+ {
+  "prefix": "NI",
+  "brand": "Nissan",
+  "logo": "nissan.svg",
+  "confidence": "medium",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 55422
+  },
+  "note": "all NI667/NI699 in our data",
+  "maker": "Philips"
+ },
+ {
+  "prefix": "PE",
+  "brand": "Peugeot",
+  "logo": "peugeot.svg",
+  "confidence": "medium",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 40588
+  },
+  "note": "PE680/PE670",
+  "maker": "Philips"
+ },
+ {
+  "prefix": "MI",
+  "brand": "Mitsubishi",
+  "logo": "mitsubishi.svg",
+  "confidence": "medium",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 31914
+  },
+  "note": "MI610",
+  "maker": "Philips"
+ },
+ {
+  "prefix": "SU",
+  "brand": "Subaru",
+  "logo": "subaru.svg",
+  "confidence": "medium",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 18938
+  },
+  "note": "all SU685 in our data; older internal map said Suzuki",
+  "maker": "Philips"
+ },
+ {
+  "prefix": "FI",
+  "brand": "Fiat",
+  "logo": "fiat.svg",
+  "confidence": "high",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 6469
+  },
+  "maker": "Philips"
+ },
+ {
+  "prefix": "OP",
+  "brand": "Opel",
+  "logo": "opel.svg",
+  "confidence": "high",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 5651
+  },
+  "maker": "Philips"
+ },
+ {
+  "prefix": "DC",
+  "brand": "Chrysler (DaimlerChrysler?)",
+  "logo": "chrysler.svg",
+  "confidence": "low",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 505
+  },
+  "note": "DC666/DC460; meaning not confirmed",
+  "maker": "Philips"
+ },
+ {
+  "prefix": "CT",
+  "brand": "Citroen",
+  "logo": "citroen.svg",
+  "confidence": "low",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 458
+  },
+  "note": "CT594/CT710/CT720; meaning not confirmed",
+  "maker": "Philips"
+ },
+ {
+  "prefix": "JR",
+  "brand": "Jaguar",
+  "logo": "jaguar.svg",
+  "confidence": "low",
+  "source": "db+web",
+  "db_rows": {
+   "philips": 221
+  },
+  "note": "JR570; meaning not confirmed",
+  "maker": "Philips"
+ },
+ {
+  "prefix": "FA",
+  "brand": "Fiat",
+  "logo": "fiat.svg",
+  "confidence": "high",
+  "source": "db+web",
+  "db_rows": {
+   "grundig": 300098
+  },
+  "note": "Grundig Fiat units (FA09/FA10)",
+  "maker": "Grundig"
+ },
+ {
+  "prefix": "GR",
+  "brand": "Grundig",
+  "logo": "grundig.svg",
+  "confidence": "high",
+  "source": "db+web",
+  "db_rows": {
+   "grundig": 150113
+  },
+  "note": "Generic Grundig unit serial; car maker not encoded",
+  "maker": "Grundig"
+ },
+ {
+  "prefix": "YS",
+  "brand": "Saab",
+  "logo": "saab.svg",
+  "confidence": "medium",
+  "source": "db+web",
+  "db_rows": {
+   "grundig": 4000
+  },
+  "note": "YS0896; YS is Saab's VIN maker code",
+  "maker": "Grundig"
+ },
+ {
+  "prefix": "MC",
+  "brand": "Smart",
+  "logo": "smart.svg",
+  "confidence": "low",
+  "source": "db+web",
+  "db_rows": {
+   "grundig": 245
+  },
+  "note": "MC11/MC12; probably MCC Smart",
+  "maker": "Grundig"
+ },
+ {
+  "prefix": "BE",
+  "brand": "Becker",
+  "logo": "becker.svg",
+  "confidence": "medium",
+  "source": "web",
+  "note": "Becker-built; common in Mercedes-Benz and Porsche",
+  "maker": "Becker"
+ },
+ {
+  "prefix": "AU",
+  "brand": "Audi",
+  "logo": "audi.svg",
+  "confidence": "medium",
+  "source": "web",
+  "note": "non-AUZ Audi serial"
+ },
+ {
+  "prefix": "VW",
+  "brand": "Volkswagen",
+  "logo": "volkswagen.svg",
+  "confidence": "medium",
+  "source": "web",
+  "note": "non-VWZ VW serial"
+ },
+ {
+  "prefix": "",
+  "brand": "Unknown",
+  "logo": "unknown.svg",
+  "fallback": true
+ }
+]
